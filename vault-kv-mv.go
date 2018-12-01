@@ -41,7 +41,7 @@ func FindLeafs(logical api.Logical, source string) (leafs []string) {
 	return leafs
 }
 
-func Move(keys map[string]string) {
+func Move(logical api.Logical, keys map[string]string) {
 	for oldKey, newKey := range keys {
 		secret, err := logical.Read(oldKey)
 		if err != nil || secret == nil {
@@ -62,13 +62,12 @@ func Move(keys map[string]string) {
 	}
 }
 
-var client, err = api.NewClient(nil)
-var logical = client.Logical()
-
 func main() {
+	client, err := api.NewClient(nil)
 	if err != nil {
 		log.Fatalf("Failed to create a vault client: %v", err)
 	}
+	logical := client.Logical()
 
 	flag.Parse()
 	args := flag.Args()
@@ -80,5 +79,5 @@ func main() {
 
 	leafs := FindLeafs(*logical, source)
 	newKeys := NewKeys(leafs, source, destination)
-	Move(newKeys)
+	Move(*logical, newKeys)
 }
