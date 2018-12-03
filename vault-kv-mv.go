@@ -9,12 +9,12 @@ import (
 	"strings"
 )
 
-func NewKeys(leafs []string, source string, destination string) (newKeys map[string]string) {
-	newKeys = map[string]string{}
+func OldNewPaths(leafs []string, source string, destination string) (paths map[string]string) {
+	paths = map[string]string{}
 	for _, v := range leafs {
-		newKeys[v] = strings.Replace(v, source, destination, 1)
+		paths[v] = strings.Replace(v, source, destination, 1)
 	}
-	return newKeys
+	return paths
 }
 
 func FindLeafs(logical api.Logical, source string) (leafs []string) {
@@ -42,22 +42,22 @@ func FindLeafs(logical api.Logical, source string) (leafs []string) {
 }
 
 func Move(logical api.Logical, keys map[string]string) {
-	for oldKey, newKey := range keys {
-		secret, err := logical.Read(oldKey)
+	for oldPath, newPath := range keys {
+		secret, err := logical.Read(oldPath)
 		if err != nil || secret == nil {
-			log.Fatalf("Could not read secret %v. Try again after fixing the problem: %v", oldKey, err)
+			log.Fatalf("Could not read secret %v. Try again after fixing the problem: %v", oldPath, err)
 		}
 
-		log.Printf("Writing to %v\n", newKey)
-		_, err = logical.Write(newKey, secret.Data)
+		log.Printf("Writing to new path %v\n", newPath)
+		_, err = logical.Write(newPath, secret.Data)
 		if err != nil {
-			log.Fatalf("Failed to write %v. Try again after fixing the problem.", newKey)
+			log.Fatalf("Failed to write %v. Try again after fixing the problem.", newPath)
 		}
 
-		log.Printf("Deleting old key %v\n", oldKey)
-		_, err = logical.Delete(oldKey)
+		log.Printf("Deleting old path %v\n", oldPath)
+		_, err = logical.Delete(oldPath)
 		if err != nil {
-			log.Fatalf("Failed to delete old key%v. You will need to manually delete this key after fixing the problem.", oldKey)
+			log.Fatalf("Failed to delete old key%v. You will need to manually delete this key after fixing the problem.", oldPath)
 		}
 	}
 }
@@ -78,6 +78,5 @@ func main() {
 	destination := args[1]
 
 	leafs := FindLeafs(*logical, source)
-	newKeys := NewKeys(leafs, source, destination)
-	Move(*logical, newKeys)
+	Move(*logical, OldNewPaths(leafs, source, destination))
 }
