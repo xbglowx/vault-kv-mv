@@ -6,5 +6,8 @@ Easily move Hashicorp Vault keys to different paths
 1. `go get -d .`
 1. `go build vault-kv-mv.go`
 
+## Test
+1. go test
+
 ## Usage
 `./vault-kv-mv <source_key_path> <destination_key_path>`
