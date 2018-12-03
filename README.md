@@ -1,4 +1,4 @@
-# vault-kv-mv
+# vault-kv-mv [![CircleCI](https://circleci.com/gh/xbglowx/vault-kv-mv.svg?style=svg)](https://circleci.com/gh/xbglowx/vault-kv-mv)
 Easily move Hashicorp Vault keys to different paths
 
 ## Build
