@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"fmt"
 
 	"flag"
 	"github.com/hashicorp/vault/api"
 	"strings"
 )
 
+// OldNewPaths : Returns a map that has the old path as the key with a value of the new path
 func OldNewPaths(leafs []string, source string, destination string) (paths map[string]string) {
 	paths = map[string]string{}
 	for _, v := range leafs {
@@ -17,6 +18,7 @@ func OldNewPaths(leafs []string, source string, destination string) (paths map[s
 	return paths
 }
 
+// FindLeafs : Find all keys using the source path supplied by the operator as the starting point
 func FindLeafs(logical api.Logical, source string) (leafs []string) {
 	if s, _ := logical.List(source); s != nil {
 		secret, err := logical.List(source)
@@ -41,6 +43,7 @@ func FindLeafs(logical api.Logical, source string) (leafs []string) {
 	return leafs
 }
 
+// Move : Creates new entries and then deletes the older ones
 func Move(logical api.Logical, keys map[string]string) {
 	for oldPath, newPath := range keys {
 		secret, err := logical.Read(oldPath)
