@@ -13,10 +13,10 @@ import (
 	"github.com/hashicorp/vault/logical"
 	"github.com/hashicorp/vault/vault"
 
+	"fmt"
 	auditFile "github.com/hashicorp/vault/builtin/audit/file"
 	credUserpass "github.com/hashicorp/vault/builtin/credential/userpass"
 	vaulthttp "github.com/hashicorp/vault/http"
-	//"fmt"
 )
 
 // testVaultServer creates a test vault cluster and returns a configured API
@@ -80,25 +80,65 @@ func testVaultServerCoreConfig(t testing.TB, coreConfig *vault.CoreConfig) (*api
 	return client, unsealKeys, func() { defer cluster.Cleanup() }
 }
 
-func TestMoveSingleKey(t *testing.T) {
+func TestMoveKey(t *testing.T) {
 	client, closer := testVaultServer(t)
 	defer closer()
 
-	oldPath := "secret/old"
-	newPath := "secret/new"
+	source := "secret/old"
+	destination := "secret/new"
 	key := "test"
 	value := "test"
 	data := map[string]interface{}{
 		key: value,
 	}
-	keys := map[string]string{
-		oldPath: newPath,
+
+	logical := client.Logical()
+	logical.Write(source, data)
+
+	leafs := FindLeafs(*logical, source)
+	Move(*logical, OldNewPaths(leafs, source, destination))
+
+	secret, err := logical.Read(destination)
+	if err != nil {
+		t.Errorf("Error while reading vault key %v: %v", source, err)
+	}
+
+	if secret.Data[key] != value {
+		t.Errorf("Expected key/value of %v:%v for %v. Got %v instead", key, value, source, secret.Data[source])
+	}
+
+	secret, err = logical.Read(source)
+	if err != nil {
+		t.Errorf("Failed while checking vault for the old path: %v", err)
+	}
+
+	if secret != nil {
+		t.Errorf("Expected path %v to be deleted. But, it still exists.", source)
+	}
+}
+
+func TestMoveDir(t *testing.T) {
+	client, closer := testVaultServer(t)
+	defer closer()
+
+	source := "secret/old"
+	destination := "secret/new"
+	suffix := "foo/bar"
+	oldPath := fmt.Sprintf("%v/%v", source, suffix)
+	newPath := fmt.Sprintf("%v/%v", destination, suffix)
+
+	key := "test"
+	value := "test"
+	data := map[string]interface{}{
+		key: value,
 	}
 
 	logical := client.Logical()
 	logical.Write(oldPath, data)
 
-	Move(*logical, keys)
+	leafs := FindLeafs(*logical, source)
+	Move(*logical, OldNewPaths(leafs, source, destination))
+
 	secret, err := logical.Read(newPath)
 	if err != nil {
 		t.Errorf("Error while reading vault key %v: %v", newPath, err)
