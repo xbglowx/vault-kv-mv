@@ -4,11 +4,9 @@ import (
 	"log"
 	"path"
 
-	"bufio"
 	"flag"
 	"fmt"
 	"github.com/hashicorp/vault/api"
-	"os"
 	"strings"
 )
 
@@ -41,36 +39,14 @@ func AppendDirLeafs(secrets api.Secret, logical api.Logical, source string) (lea
 
 // FindLeafs : Find all keys using the source path supplied by the operator as the starting point
 func FindLeafs(logical api.Logical, source string) (leafs []string) {
-	listSecret, err := logical.List(source)
-	if err != nil {
-		log.Fatalf("Failed to list %v: %v", source, err)
-	}
-
-	readSecret, err := logical.Read(source)
-	if err != nil {
-		log.Fatalf("Failed to read %v: %v", source, err)
-	}
-
-	if readSecret != nil && listSecret != nil {
-		reader := bufio.NewReader(os.Stdin)
-		for {
-			fmt.Printf("There is a key and dir both named %v. Would you like to move the key or dir? ", source)
-			text, _ := reader.ReadString('\n')
-			text = strings.Trim(strings.ToLower(text), "\n")
-			if text == "key" {
-				leafs = append(leafs, source)
-				break
-			} else if text == "dir" {
-				leafs = AppendDirLeafs(*listSecret, logical, source)
-				break
-			}
+	if strings.HasSuffix(source, "/") {
+		listSecret, err := logical.List(source)
+		if err != nil {
+			log.Fatalf("Failed to list %v: %v", source, err)
 		}
-	} else if readSecret != nil {
-		leafs = append(leafs, source)
-	} else if listSecret != nil {
 		leafs = AppendDirLeafs(*listSecret, logical, source)
 	} else {
-		log.Fatalf("Source %v is not a valid vault path", source)
+		leafs = append(leafs, source)
 	}
 	return leafs
 }
@@ -80,7 +56,7 @@ func Move(logical api.Logical, keys map[string]string) {
 	for oldPath, newPath := range keys {
 		secret, err := logical.Read(oldPath)
 		if err != nil || secret == nil {
-			log.Fatalf("Could not read secret %v. Try again after fixing the problem: %v", oldPath, err)
+			log.Fatalf("Could not read secret %v. Does it exist?", oldPath)
 		}
 
 		log.Printf("Writing to new path %v\n", newPath)
