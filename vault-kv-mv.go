@@ -106,6 +106,10 @@ func main() {
 	source := args[0]
 	destination := args[1]
 
+	if source == destination {
+		log.Fatalf("source (%s) and destination (%s) are identical. Nothing to do", source, destination)
+	}
+
 	leafs := FindLeafs(*logical, source)
 	Move(*logical, OldNewPaths(leafs, source, destination))
 }
