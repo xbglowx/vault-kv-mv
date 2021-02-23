@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"path"
 
 	"bufio"
 	"flag"
@@ -14,13 +15,18 @@ import (
 // OldNewPaths : Returns a map that has the old path as the key with a value of the new path
 func OldNewPaths(leafs []string, source string, destination string) (paths map[string]string) {
 	paths = map[string]string{}
+
 	for _, v := range leafs {
-		paths[v] = strings.Replace(v, source, destination, 1)
+		if strings.HasSuffix(destination, "/") {
+			paths[v] = fmt.Sprintf("%s%s", destination, path.Base(source))
+		} else {
+			paths[v] = strings.Replace(v, source, destination, 1)
+		}
 	}
 	return paths
 }
 
-// AppendDirLeafs : Recursively find leafs if a dir is the source
+// AppendDirLeafs : Recursively find leafs if the source is a dir
 func AppendDirLeafs(secrets api.Secret, logical api.Logical, source string) (leafs []string) {
 	keys := secrets.Data["keys"].([]interface{})
 	for _, v := range keys {

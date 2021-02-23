@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"path"
 	"testing"
 
 	"github.com/hashicorp/vault/api"
@@ -155,5 +156,44 @@ func TestMoveDir(t *testing.T) {
 
 	if secret != nil {
 		t.Errorf("Expected path %v to be deleted. But, it still exists.", oldPath)
+	}
+}
+
+func TestMoveFileToDir(t *testing.T) {
+	client, closer := testVaultServer(t)
+	defer closer()
+
+	source := "secret/foo"
+	destination := "secret/bar/"
+	newDestinationFile := fmt.Sprintf("%s/%s", destination, path.Base(source))
+
+	key := "test"
+	value := "test"
+	data := map[string]interface{}{
+		key: value,
+	}
+
+	logical := client.Logical()
+	logical.Write(source, data)
+
+	leafs := FindLeafs(*logical, source)
+	Move(*logical, OldNewPaths(leafs, source, destination))
+
+	secret, err := logical.Read(newDestinationFile)
+	if err != nil {
+		t.Errorf("Error while reading vault key %v: %v", newDestinationFile, err)
+	}
+
+	if secret.Data[key] != value {
+		t.Errorf("Expected key/value of %v:%v for %v. Got %v instead", key, value, newDestinationFile, secret.Data[newDestinationFile])
+	}
+
+	secret, err = logical.Read(source)
+	if err != nil {
+		t.Errorf("Failed while checking vault for the old path: %v", err)
+	}
+
+	if secret != nil {
+		t.Errorf("Expected path %v to be deleted. But, it still exists.", source)
 	}
 }
