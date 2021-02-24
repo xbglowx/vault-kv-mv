@@ -81,12 +81,13 @@ func testVaultServerCoreConfig(t testing.TB, coreConfig *vault.CoreConfig) (*api
 	return client, unsealKeys, func() { defer cluster.Cleanup() }
 }
 
-func TestMoveKey(t *testing.T) {
+func TestRenameSecret(t *testing.T) {
 	client, closer := testVaultServer(t)
 	defer closer()
 
 	source := "secret/old"
 	destination := "secret/new"
+
 	key := "test"
 	value := "test"
 	data := map[string]interface{}{
@@ -96,8 +97,12 @@ func TestMoveKey(t *testing.T) {
 	logical := client.Logical()
 	logical.Write(source, data)
 
-	leafs := FindLeafs(*logical, source)
-	Move(*logical, OldNewPaths(leafs, source, destination))
+	vc := vaultClient{
+		logical: logical,
+	}
+
+	leafs := vc.FindLeafs(source)
+	vc.Move(OldNewPaths(leafs, source, destination))
 
 	secret, err := logical.Read(destination)
 	if err != nil {
@@ -118,15 +123,16 @@ func TestMoveKey(t *testing.T) {
 	}
 }
 
-func TestMoveDir(t *testing.T) {
+func TestMoveDirToDirTrailingSlash(t *testing.T) {
 	client, closer := testVaultServer(t)
 	defer closer()
 
-	source := "secret/old"
-	destination := "secret/new"
-	suffix := "foo/bar"
-	oldPath := fmt.Sprintf("%v/%v", source, suffix)
-	newPath := fmt.Sprintf("%v/%v", destination, suffix)
+	source := "secret/old/"
+	destination := "secret/new/"
+
+	secretName := "foo/bar"
+	oldSecret := fmt.Sprintf("%v%v", source, secretName)
+	newSecret := fmt.Sprintf("%v%v", destination, secretName)
 
 	key := "test"
 	value := "test"
@@ -135,37 +141,87 @@ func TestMoveDir(t *testing.T) {
 	}
 
 	logical := client.Logical()
-	logical.Write(oldPath, data)
+	logical.Write(oldSecret, data)
 
-	leafs := FindLeafs(*logical, source)
-	Move(*logical, OldNewPaths(leafs, source, destination))
+	vc := vaultClient{
+		logical: client.Logical(),
+	}
 
-	secret, err := logical.Read(newPath)
+	leafs := vc.FindLeafs(source)
+	vc.Move(OldNewPaths(leafs, source, destination))
+
+	secret, err := logical.Read(newSecret)
 	if err != nil {
-		t.Errorf("Error while reading vault key %v: %v", newPath, err)
+		t.Errorf("Error while reading vault key %v: %v", newSecret, err)
 	}
 
 	if secret.Data[key] != value {
-		t.Errorf("Expected key/value of %v:%v for %v. Got %v instead", key, value, newPath, secret.Data[newPath])
+		t.Errorf("Expected key/value of %v:%v for %v. Got %v instead", key, value, newSecret, secret.Data[newSecret])
 	}
 
-	secret, err = logical.Read(oldPath)
+	secret, err = logical.Read(oldSecret)
 	if err != nil {
 		t.Errorf("Failed while checking vault for the old path: %v", err)
 	}
 
 	if secret != nil {
-		t.Errorf("Expected path %v to be deleted. But, it still exists.", oldPath)
+		t.Errorf("Expected path %v to be deleted. But, it still exists.", oldSecret)
 	}
 }
 
-func TestMoveFileToDir(t *testing.T) {
+func TestMoveDirToDirNoTrailingSlash(t *testing.T) {
+	client, closer := testVaultServer(t)
+	defer closer()
+
+	source := "secret/old/"
+	destination := "secret/new"
+
+	secretName := "foo/bar"
+	oldSecret := fmt.Sprintf("%v%v", source, secretName)
+	newSecret := fmt.Sprintf("%v/%v", destination, secretName)
+
+	key := "test"
+	value := "test"
+	data := map[string]interface{}{
+		key: value,
+	}
+
+	logical := client.Logical()
+	logical.Write(oldSecret, data)
+
+	vc := vaultClient{
+		logical: client.Logical(),
+	}
+
+	leafs := vc.FindLeafs(source)
+	vc.Move(OldNewPaths(leafs, source, destination))
+
+	secret, err := logical.Read(newSecret)
+	if err != nil {
+		t.Errorf("Error while reading vault key %v: %v", newSecret, err)
+	}
+
+	if secret.Data[key] != value {
+		t.Errorf("Expected key/value of %v:%v for %v. Got %v instead", key, value, newSecret, secret.Data[newSecret])
+	}
+
+	secret, err = logical.Read(oldSecret)
+	if err != nil {
+		t.Errorf("Failed while checking vault for the old path: %v", err)
+	}
+
+	if secret != nil {
+		t.Errorf("Expected path %v to be deleted. But, it still exists.", oldSecret)
+	}
+}
+
+func TestMoveSecretToDir(t *testing.T) {
 	client, closer := testVaultServer(t)
 	defer closer()
 
 	source := "secret/foo"
 	destination := "secret/bar/"
-	newDestinationFile := fmt.Sprintf("%s/%s", destination, path.Base(source))
+	newDestinationFile := fmt.Sprintf("%s%s", destination, path.Base(source))
 
 	key := "test"
 	value := "test"
@@ -176,8 +232,12 @@ func TestMoveFileToDir(t *testing.T) {
 	logical := client.Logical()
 	logical.Write(source, data)
 
-	leafs := FindLeafs(*logical, source)
-	Move(*logical, OldNewPaths(leafs, source, destination))
+	vc := vaultClient{
+		logical: client.Logical(),
+	}
+
+	leafs := vc.FindLeafs(source)
+	vc.Move(OldNewPaths(leafs, source, destination))
 
 	secret, err := logical.Read(newDestinationFile)
 	if err != nil {
