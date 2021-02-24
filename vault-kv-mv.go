@@ -15,10 +15,22 @@ func OldNewPaths(leafs []string, source string, destination string) (paths map[s
 	paths = map[string]string{}
 
 	for _, v := range leafs {
-		if strings.HasSuffix(destination, "/") {
+		if strings.HasSuffix(source, "/") && !strings.HasSuffix(destination, "/") {
+			// Move all secrets under dir secret/old/ under dir secret/new
+			d := fmt.Sprintf("%s/", destination)
+			paths[v] = strings.Replace(v, source, d, 1)
+		} else if strings.HasSuffix(source, "/") && strings.HasSuffix(destination, "/") {
+			// Move all secrets under dir secret/old/ to dir secret/new/
+			paths[v] = strings.Replace(v, source, destination, 1)
+		} else if !strings.HasSuffix(source, "/") && !strings.HasSuffix(destination, "/") {
+			// Rename secret secret/old to secret/new
+			paths[v] = destination
+		} else if !strings.HasSuffix(source, "/") && strings.HasSuffix(destination, "/") {
+			// Move secret secret/old under to secret/new/old
 			paths[v] = fmt.Sprintf("%s%s", destination, path.Base(source))
 		} else {
-			paths[v] = strings.Replace(v, source, destination, 1)
+			// Should never get here
+			log.Fatalf("Not sure what to do")
 		}
 	}
 	return paths
