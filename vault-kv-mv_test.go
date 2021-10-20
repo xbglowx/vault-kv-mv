@@ -22,7 +22,7 @@ import (
 
 // testVaultServer creates a test vault cluster and returns a configured API
 // client and closer function.
-func testVaultServer(t testing.TB) (*api.Client, func()) {
+func testVaultServer(t *testing.T) (*api.Client, func()) {
 	t.Helper()
 
 	client, _, closer := testVaultServerUnseal(t)
@@ -31,7 +31,7 @@ func testVaultServer(t testing.TB) (*api.Client, func()) {
 
 // testVaultServerUnseal creates a test vault cluster and returns a configured
 // API client, list of unseal keys (as strings), and a closer function.
-func testVaultServerUnseal(t testing.TB) (*api.Client, []string, func()) {
+func testVaultServerUnseal(t *testing.T) (*api.Client, []string, func()) {
 	t.Helper()
 
 	return testVaultServerCoreConfig(t, &vault.CoreConfig{
@@ -55,7 +55,7 @@ func testVaultServerUnseal(t testing.TB) (*api.Client, []string, func()) {
 
 // testVaultServerCoreConfig creates a new vault cluster with the given core
 // configuration. This is a lower-level test helper.
-func testVaultServerCoreConfig(t testing.TB, coreConfig *vault.CoreConfig) (*api.Client, []string, func()) {
+func testVaultServerCoreConfig(t *testing.T, coreConfig *vault.CoreConfig) (*api.Client, []string, func()) {
 	t.Helper()
 
 	cluster := vault.NewTestCluster(t, coreConfig, &vault.TestClusterOptions{
