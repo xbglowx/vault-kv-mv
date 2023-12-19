@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/vault/vault"
 
 	"fmt"
+
 	auditFile "github.com/hashicorp/vault/builtin/audit/file"
 	credUserpass "github.com/hashicorp/vault/builtin/credential/userpass"
 	vaulthttp "github.com/hashicorp/vault/http"
@@ -95,7 +96,10 @@ func TestRenameSecret(t *testing.T) {
 	}
 
 	logical := client.Logical()
-	logical.Write(source, data)
+	_, err := logical.Write(source, data)
+	if err != nil {
+		t.Errorf("Failed to write/seed data during testing. %v", err)
+	}
 
 	vc := vaultClient{
 		logical: logical,
@@ -141,7 +145,10 @@ func TestMoveDirToDirTrailingSlash(t *testing.T) {
 	}
 
 	logical := client.Logical()
-	logical.Write(oldSecret, data)
+	_, err := logical.Write(oldSecret, data)
+	if err != nil {
+		t.Errorf("Failed to write/seed data during testing. %v", err)
+	}
 
 	vc := vaultClient{
 		logical: client.Logical(),
@@ -187,7 +194,10 @@ func TestMoveDirToDirNoTrailingSlash(t *testing.T) {
 	}
 
 	logical := client.Logical()
-	logical.Write(oldSecret, data)
+	_, err := logical.Write(oldSecret, data)
+	if err != nil {
+		t.Errorf("Failed to write/seed data during testing. %v", err)
+	}
 
 	vc := vaultClient{
 		logical: client.Logical(),
@@ -230,7 +240,10 @@ func TestMoveSecretToDir(t *testing.T) {
 	}
 
 	logical := client.Logical()
-	logical.Write(source, data)
+	_, err := logical.Write(source, data)
+	if err != nil {
+		t.Errorf("Failed to write/seed data during testing. %v", err)
+	}
 
 	vc := vaultClient{
 		logical: client.Logical(),
