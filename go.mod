@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/hashicorp/go-hclog v1.5.0
-	github.com/hashicorp/vault v1.15.3
+	github.com/hashicorp/vault v1.15.5
 	github.com/hashicorp/vault-plugin-secrets-kv v0.16.1
 	github.com/hashicorp/vault/api v1.11.0
 	github.com/hashicorp/vault/sdk v0.10.2
@@ -108,6 +108,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gophercloud/gophercloud v0.1.0 // indirect
+	github.com/hashicorp-forge/bbolt v1.3.8-hc3 // indirect
 	github.com/hashicorp/consul/sdk v0.14.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/eventlogger v0.2.3 // indirect

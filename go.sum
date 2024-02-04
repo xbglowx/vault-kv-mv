@@ -697,6 +697,8 @@ github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c h1:6rhixN/i8
 github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c/go.mod h1:NMPJylDgVpX0MLRlPy15sqSwOFv/U1GZ2m21JhFfek0=
 github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed h1:5upAirOpQc1Q53c0bnx2ufif5kANL7bfZWcc6VJWJd8=
 github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed/go.mod h1:tMWxXQ9wFIaZeTI9F+hmhFiGpFmhOHzyShyFUhRm0H4=
+github.com/hashicorp-forge/bbolt v1.3.8-hc3 h1:iTWR3RDPj0TGChAvJ8QjHFcNFWAUVgNQV73IE6gAX4E=
+github.com/hashicorp-forge/bbolt v1.3.8-hc3/go.mod h1:sQBu5UIJ+rcUFU4Fo9rpTHNV935jwmGWS3dQ/MV8810=
 github.com/hashicorp/cap v0.3.4 h1:RoqWYqr6LaDLuvnBCpod1sZtvuEhehIhu0GncmoHW40=
 github.com/hashicorp/cap v0.3.4/go.mod h1:dHTmyMIVbzT981XxRoci5G//dfWmd/HhuNiCH6J5+IA=
 github.com/hashicorp/consul/api v1.23.0 h1:L6e4v1AfoumqAHq/Rrsmuulev+nd7vltM3k8H329tyI=
@@ -841,6 +843,8 @@ github.com/hashicorp/serf v0.10.1 h1:Z1H2J60yRKvfDYAOZLd2MU0ND4AH/WDz7xYHDWQsIPY
 github.com/hashicorp/serf v0.10.1/go.mod h1:yL2t6BqATOLGc5HF7qbFkTfXoPIY0WZdWHfEvMqbG+4=
 github.com/hashicorp/vault v1.15.3 h1:FR60jaJIWCbLdI9W3TSDZC7teY5yx+zD14qYGP67oU4=
 github.com/hashicorp/vault v1.15.3/go.mod h1:Q/SaVsPCcXA8UXU+4hcXKYPhThBmw27qKZQpPCJivAc=
+github.com/hashicorp/vault v1.15.5 h1:CzDfgFcKjMfsfYhxyfixugeDNcCTU5L0idJXsNEmt9g=
+github.com/hashicorp/vault v1.15.5/go.mod h1:Osg4441jt6uoCZi46XfASOy988G3mSh5UTo1EKmVnUY=
 github.com/hashicorp/vault-plugin-auth-alicloud v0.16.0 h1:DgJ9v3sWQlvyvpmCU/YAFdmGgLi6t8PHQ+O9UeYIuCg=
 github.com/hashicorp/vault-plugin-auth-alicloud v0.16.0/go.mod h1:UQa534XDQsSwwR4MYhOGnkF2gEao9zVABySBTfjAq08=
 github.com/hashicorp/vault-plugin-auth-azure v0.16.2 h1:ikzhUkiZ6QZ/mhoKNBVTJCzeaC9mEhXCqZ/7Z1Zoajg=
