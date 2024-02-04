@@ -1,6 +1,6 @@
 module github.com/xbglowx/vault-kv-mv
 
-go 1.21.6
+go 1.21
 
 require (
 	github.com/hashicorp/go-hclog v1.5.0
