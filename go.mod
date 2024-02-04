@@ -3,7 +3,7 @@ module github.com/xbglowx/vault-kv-mv
 go 1.21
 
 require (
-	github.com/hashicorp/go-hclog v1.5.0
+	github.com/hashicorp/go-hclog v1.6.2
 	github.com/hashicorp/vault v1.15.3
 	github.com/hashicorp/vault-plugin-secrets-kv v0.16.1
 	github.com/hashicorp/vault/api v1.11.0
