@@ -5,19 +5,14 @@ import (
 	"path"
 	"testing"
 
+	"github.com/hashicorp/go-hclog"
+	kv "github.com/hashicorp/vault-plugin-secrets-kv"
 	"github.com/hashicorp/vault/api"
-	"github.com/hashicorp/vault/audit"
-	"github.com/hashicorp/vault/builtin/logical/database"
-	"github.com/hashicorp/vault/builtin/logical/pki"
-	"github.com/hashicorp/vault/builtin/logical/transit"
-	"github.com/hashicorp/vault/helper/builtinplugins"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/hashicorp/vault/vault"
 
 	"fmt"
 
-	auditFile "github.com/hashicorp/vault/builtin/audit/file"
-	credUserpass "github.com/hashicorp/vault/builtin/credential/userpass"
 	vaulthttp "github.com/hashicorp/vault/http"
 )
 
@@ -36,21 +31,13 @@ func testVaultServerUnseal(t *testing.T) (*api.Client, []string, func()) {
 	t.Helper()
 
 	return testVaultServerCoreConfig(t, &vault.CoreConfig{
-		DisableMlock: true,
-		DisableCache: true,
-		CredentialBackends: map[string]logical.Factory{
-			"userpass": credUserpass.Factory,
-		},
-		AuditBackends: map[string]audit.Factory{
-			"file": auditFile.Factory,
-		},
 		LogicalBackends: map[string]logical.Factory{
-			"database":       database.Factory,
-			"generic-leased": vault.LeasedPassthroughBackendFactory,
-			"pki":            pki.Factory,
-			"transit":        transit.Factory,
+			"kv":    kv.Factory,
+			"kv-v2": kv.VersionedKVFactory,
 		},
-		BuiltinRegistry: builtinplugins.Registry,
+		Logger: hclog.New(&hclog.LoggerOptions{
+			Level: hclog.Off,
+		}),
 	})
 }
 
