@@ -1,4 +1,4 @@
-# vault-kv-mv [![CircleCI](https://circleci.com/gh/xbglowx/vault-kv-mv.svg?style=svg)](https://circleci.com/gh/xbglowx/vault-kv-mv)
+# vault-kv-mv [![Build and Test](https://github.com/xbglowx/vault-kv-mv/actions/workflows/build-test.yaml/badge.svg)](https://github.com/xbglowx/vault-kv-mv/actions/workflows/build-test.yaml) [![Build and Test](https://github.com/xbglowx/vault-kv-mv/actions/workflows/build-test.yaml/badge.svg)](https://github.com/xbglowx/vault-kv-mv/actions/workflows/build-test.yaml) [![golangci-lint](https://github.com/xbglowx/vault-kv-mv/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/xbglowx/vault-kv-mv/actions/workflows/golangci-lint.yml)
 Easily move Hashicorp Vault keys to different paths
 
 ## Build
