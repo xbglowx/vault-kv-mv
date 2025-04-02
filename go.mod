@@ -2,7 +2,7 @@ module github.com/xbglowx/vault-kv-mv
 
 go 1.22.5
 
-toolchain go1.24.0
+toolchain go1.24.2
 
 require (
 	github.com/hashicorp/go-hclog v1.6.3
