@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/vault v1.19.4
 	github.com/hashicorp/vault-plugin-secrets-kv v0.21.0
 	github.com/hashicorp/vault/api v1.16.0
-	github.com/hashicorp/vault/sdk v0.16.0
+	github.com/hashicorp/vault/sdk v0.17.0
 )
 
 require (
