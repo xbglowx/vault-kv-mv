@@ -844,6 +844,8 @@ github.com/hashicorp/vault-plugin-secrets-kv v0.23.0 h1:LpjG8L77PGqLsS5fYYEW6Lxv
 github.com/hashicorp/vault-plugin-secrets-kv v0.23.0/go.mod h1:U+aKQtbJH78mP/X6k/nxaPXIzdqLyNfo1LaP9570yAQ=
 github.com/hashicorp/vault-plugin-secrets-kv v0.24.0 h1:LRL9eeEgQxVzf05IEJWg6uApFZeDOCJEU9M0LbnVB1U=
 github.com/hashicorp/vault-plugin-secrets-kv v0.24.0/go.mod h1:U+aKQtbJH78mP/X6k/nxaPXIzdqLyNfo1LaP9570yAQ=
+github.com/hashicorp/vault-plugin-secrets-kv v0.24.1 h1:RGgCo768KTRxwEymy7j1zDOlQsAqXzh6wshnRB3fZiE=
+github.com/hashicorp/vault-plugin-secrets-kv v0.24.1/go.mod h1:U+aKQtbJH78mP/X6k/nxaPXIzdqLyNfo1LaP9570yAQ=
 github.com/hashicorp/vault-plugin-secrets-mongodbatlas v0.13.0 h1:BeDS7luTeOW0braIbtuyairFF8SEz7k3nvi9e+mJ2Ok=
 github.com/hashicorp/vault-plugin-secrets-mongodbatlas v0.13.0/go.mod h1:sprde+S70PBIbgOLUAKDxR+xNF714ksBBVh77O3hnWc=
 github.com/hashicorp/vault-plugin-secrets-openldap v0.14.3 h1:HY8q7qVmhtBYiNa5K24wws72jPjwzkSuAt7LwkRcT8Q=
