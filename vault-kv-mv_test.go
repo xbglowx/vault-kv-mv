@@ -1,22 +1,18 @@
 package main
 
 import (
-	"encoding/base64"
+	"context"
+	"fmt"
 	"path"
 	"testing"
+	"time"
 
-	"github.com/hashicorp/go-hclog"
-	kv "github.com/hashicorp/vault-plugin-secrets-kv"
 	"github.com/hashicorp/vault/api"
-	"github.com/hashicorp/vault/sdk/logical"
-	"github.com/hashicorp/vault/vault"
-
-	"fmt"
-
-	vaulthttp "github.com/hashicorp/vault/http"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-// testVaultServer creates a test vault cluster and returns a configured API
+// testVaultServer creates a test vault container and returns a configured API
 // client and closer function.
 func testVaultServer(t *testing.T) (*api.Client, func()) {
 	t.Helper()
@@ -25,49 +21,99 @@ func testVaultServer(t *testing.T) (*api.Client, func()) {
 	return client, closer
 }
 
-// testVaultServerUnseal creates a test vault cluster and returns a configured
+// testVaultServerUnseal creates a test vault container and returns a configured
 // API client, list of unseal keys (as strings), and a closer function.
 func testVaultServerUnseal(t *testing.T) (*api.Client, []string, func()) {
 	t.Helper()
 
-	return testVaultServerCoreConfig(t, &vault.CoreConfig{
-		LogicalBackends: map[string]logical.Factory{
-			"kv":    kv.Factory,
-			"kv-v2": kv.VersionedKVFactory,
+	ctx := context.Background()
+
+	// Start Vault container
+	req := testcontainers.ContainerRequest{
+		Image:        "hashicorp/vault:1.19.5",
+		ExposedPorts: []string{"8200/tcp"},
+		Env: map[string]string{
+			"VAULT_DEV_ROOT_TOKEN_ID": "root",
+			"VAULT_DEV_LISTEN_ADDRESS": "0.0.0.0:8200",
 		},
-		Logger: hclog.New(&hclog.LoggerOptions{
-			Level: hclog.Off,
-		}),
-	})
-}
-
-// testVaultServerCoreConfig creates a new vault cluster with the given core
-// configuration. This is a lower-level test helper.
-func testVaultServerCoreConfig(t *testing.T, coreConfig *vault.CoreConfig) (*api.Client, []string, func()) {
-	t.Helper()
-
-	cluster := vault.NewTestCluster(t, coreConfig, &vault.TestClusterOptions{
-		HandlerFunc: vaulthttp.Handler,
-	})
-	cluster.Start()
-
-	// Make it easy to get access to the active
-	core := cluster.Cores[0].Core
-	vault.TestWaitActive(t, core)
-
-	// Get the client already setup for us!
-	client := cluster.Cores[0].Client
-	client.SetToken(cluster.RootToken)
-
-	// Convert the unseal keys to base64 encoded, since these are how the user
-	// will get them.
-	unsealKeys := make([]string, len(cluster.BarrierKeys))
-	for i := range unsealKeys {
-		unsealKeys[i] = base64.StdEncoding.EncodeToString(cluster.BarrierKeys[i])
+		Cmd: []string{"vault", "server", "-dev"},
+		WaitingFor: wait.ForLog("Development mode should NOT be used in production installations!").
+			WithStartupTimeout(30 * time.Second),
 	}
 
-	return client, unsealKeys, func() { defer cluster.Cleanup() }
+	vaultContainer, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: req,
+		Started:          true,
+	})
+	if err != nil {
+		t.Fatalf("Failed to start vault container: %v", err)
+	}
+
+	// Get container port
+	mappedPort, err := vaultContainer.MappedPort(ctx, "8200")
+	if err != nil {
+		t.Fatalf("Failed to get mapped port: %v", err)
+	}
+
+	// Get container host
+	host, err := vaultContainer.Host(ctx)
+	if err != nil {
+		t.Fatalf("Failed to get container host: %v", err)
+	}
+
+	// Configure Vault client
+	config := api.DefaultConfig()
+	config.Address = fmt.Sprintf("http://%s:%s", host, mappedPort.Port())
+	
+	client, err := api.NewClient(config)
+	if err != nil {
+		t.Fatalf("Failed to create vault client: %v", err)
+	}
+
+	// Set token
+	client.SetToken("root")
+
+	// Wait for Vault to be ready and enable KV backends
+	maxRetries := 30
+	for i := 0; i < maxRetries; i++ {
+		_, err := client.Sys().Health()
+		if err == nil {
+			break
+		}
+		if i == maxRetries-1 {
+			t.Fatalf("Vault not ready after %d retries: %v", maxRetries, err)
+		}
+		time.Sleep(1 * time.Second)
+	}
+
+	// Disable the default KV v2 mount at secret/ and enable KV v1
+	if err := client.Sys().Unmount("secret"); err != nil {
+		t.Logf("Warning: could not unmount default secret backend: %v", err)
+	}
+
+	// Enable KV v1 backend at secret/
+	if err := client.Sys().Mount("secret", &api.MountInput{
+		Type: "kv",
+		Options: map[string]string{
+			"version": "1",
+		},
+	}); err != nil {
+		t.Fatalf("Failed to mount kv v1 backend: %v", err)
+	}
+
+	// For dev mode, we don't have actual unseal keys, so we return empty keys
+	unsealKeys := []string{}
+
+	closer := func() {
+		if err := vaultContainer.Terminate(ctx); err != nil {
+			t.Logf("Failed to terminate vault container: %v", err)
+		}
+	}
+
+	return client, unsealKeys, closer
 }
+
+
 
 func TestRenameSecret(t *testing.T) {
 	client, closer := testVaultServer(t)
