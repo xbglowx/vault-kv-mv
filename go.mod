@@ -7,7 +7,7 @@ toolchain go1.24.5
 require (
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/vault v1.20.2
-	github.com/hashicorp/vault-plugin-secrets-kv v0.24.1
+	github.com/hashicorp/vault-plugin-secrets-kv v0.24.3
 	github.com/hashicorp/vault/api v1.20.0
 	github.com/hashicorp/vault/sdk v0.18.0
 	github.com/testcontainers/testcontainers-go v0.38.0
