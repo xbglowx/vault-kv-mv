@@ -1,12 +1,23 @@
-name: Create Release
+name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+
   build:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,7 +28,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.25.0'
+        go-version: '1.24.5'
 
     - name: Check out code
       uses: actions/checkout@v5
@@ -26,20 +37,23 @@ jobs:
       run: go get -v -d ./...
 
     - name: Build
-      run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o vault-kv-search-${{ matrix.goos }}-${{ matrix.goarch }}
+      run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o vault-kv-mv-${{ matrix.goos }}-${{ matrix.goarch }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: vault-kv-search-${{ matrix.goos }}-${{ matrix.goarch }}
-        path: ./vault-kv-search-${{ matrix.goos }}-${{ matrix.goarch }}
+        name: vault-kv-mv-${{ matrix.goos }}-${{ matrix.goarch }}
+        path: ./vault-kv-mv-${{ matrix.goos }}-${{ matrix.goarch }}
 
   release:
-    needs: build
+    needs: [build, release-please]
+    if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v5
+      with:
+        ref: ${{ needs.release-please.outputs.tag_name }}
 
     - name: Download artifacts
       uses: actions/download-artifact@v5
@@ -47,20 +61,21 @@ jobs:
     - name: Prep binaries
       run: |
         mkdir tmp
-        mv vault-kv-search-*/* tmp
+        mv vault-kv-mv-*/* tmp
 
     - name: Generate SHA256 Checksum
       run: |
         cd tmp
-        shasum -a 256 vault-kv-search-* > sha256sums.txt
+        shasum -a 256 vault-kv-mv-* > sha256sums.txt
 
-    - name: Create Release and Upload Assets
+    - name: Upload Release Assets
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ needs.release-please.outputs.tag_name }}
         draft: false
         prerelease: false
         files: |
           ./tmp/sha256sums.txt
-          ./tmp/vault-kv-search-*
+          ./tmp/vault-kv-mv-*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
