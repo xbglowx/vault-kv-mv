@@ -93,7 +93,7 @@ func (vc *vaultClient) Move(keys map[string]string) {
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), `vault-kv-mv is a tool for moving or renaming secrets in HashiCorp Vault's KV secrets engine.
+		_, _ = fmt.Fprintf(flag.CommandLine.Output(), `vault-kv-mv is a tool for moving or renaming secrets in HashiCorp Vault's KV secrets engine.
 
 Usage:
   %s <source_path> <destination_path>
