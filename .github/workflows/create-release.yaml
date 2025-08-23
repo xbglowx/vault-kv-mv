@@ -25,16 +25,13 @@ jobs:
         goarch: [arm64, amd64]
 
     steps:
+    - name: Check out code
+      uses: actions/checkout@v5
+
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
-
-    - name: Check out code
-      uses: actions/checkout@v5
-
-    - name: Get dependencies
-      run: go get -v -d ./...
 
     - name: Build
       run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o vault-kv-mv-${{ matrix.goos }}-${{ matrix.goarch }}
@@ -46,7 +43,7 @@ jobs:
         path: ./vault-kv-mv-${{ matrix.goos }}-${{ matrix.goarch }}
 
   release:
-    needs: [build, release-please]
+    needs: [build, test, release-please]
     if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     steps:
@@ -79,3 +76,19 @@ jobs:
           ./tmp/vault-kv-mv-*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: 'go.mod'
+
+    - name: Test
+      run: go test -v ./...
