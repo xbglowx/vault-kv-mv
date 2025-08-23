@@ -1,14 +1,15 @@
 package main
 
 import (
-	"log"
-	"path"
-	"time"
-
 	"flag"
 	"fmt"
-	vault "github.com/hashicorp/vault/api"
+	"log"
+	"os"
+	"path"
 	"strings"
+	"time"
+
+	vault "github.com/hashicorp/vault/api"
 )
 
 type vaultClient struct {
@@ -91,10 +92,38 @@ func (vc *vaultClient) Move(keys map[string]string) {
 }
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), `vault-kv-mv is a tool for moving or renaming secrets in HashiCorp Vault's KV secrets engine.
+
+Usage:
+  %s <source_path> <destination_path>
+
+Arguments:
+  source_path
+      The current path of the secret or directory. Use a trailing '/' to indicate a directory.
+  destination_path
+      The new path for the secret or directory. Use a trailing '/' to indicate a directory.
+
+Examples:
+  # Rename a secret
+  %s secret/foo secret/bar
+
+  # Move a secret into a new directory
+  %s secret/foo secret/new/
+
+  # Move all secrets from one directory to another
+  %s secret/old/ secret/new/
+
+Authentication:
+  The tool uses the standard Vault environment variables (e.g., VAULT_ADDR, VAULT_TOKEN).
+`, os.Args[0], os.Args[0], os.Args[0], os.Args[0])
+	}
+
 	flag.Parse()
 	args := flag.Args()
 	if len(args) != 2 {
-		log.Fatal("Invalid number of arugments. Need to specify source and destination paths.")
+		flag.Usage()
+		log.Fatal("\n\nInvalid number of arguments. Please specify source and destination paths.")
 	}
 	source := args[0]
 	destination := args[1]
