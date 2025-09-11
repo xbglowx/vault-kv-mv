@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.11](https://github.com/xbglowx/vault-kv-mv/compare/v0.0.10...v0.0.11) (2025-09-11)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/hashicorp/vault/api to v1.21.0 ([08755b4](https://github.com/xbglowx/vault-kv-mv/commit/08755b47f0565e5d34519d8633b2d7ea16f6bb4d))
+
 ## [0.0.10](https://github.com/xbglowx/vault-kv-mv/compare/v0.0.9...v0.0.10) (2025-08-23)
 
 
