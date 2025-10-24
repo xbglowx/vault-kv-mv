@@ -37,7 +37,7 @@ jobs:
       run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o vault-kv-mv-${{ matrix.goos }}-${{ matrix.goarch }}
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: vault-kv-mv-${{ matrix.goos }}-${{ matrix.goarch }}
         path: ./vault-kv-mv-${{ matrix.goos }}-${{ matrix.goarch }}
@@ -53,7 +53,7 @@ jobs:
         ref: ${{ needs.release-please.outputs.tag_name }}
 
     - name: Download artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
 
     - name: Prep binaries
       run: |
