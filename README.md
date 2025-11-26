@@ -1,12 +1,11 @@
+# ⚠️ Looking for a maintainer ⚠️
+Looking for someone to take this project from me. https://github.com/xbglowx/vault-kv-mv/issues/94
+
 # vault-kv-mv
 
 [![Build and Test](https://github.com/xbglowx/vault-kv-mv/actions/workflows/build-test.yaml/badge.svg)](https://github.com/xbglowx/vault-kv-mv/actions/workflows/build-test.yaml) [![CodeQL](https://github.com/xbglowx/vault-kv-mv/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/xbglowx/vault-kv-mv/actions/workflows/codeql-analysis.yml) [![golangci-lint](https://github.com/xbglowx/vault-kv-mv/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/xbglowx/vault-kv-mv/actions/workflows/golangci-lint.yml)
 
 `vault-kv-mv` is a command-line tool that simplifies moving and renaming secrets within HashiCorp Vault's Key-Value (KV) secrets engine. It supports moving single secrets, as well as recursively moving all secrets under a given path.
-
-> **⚠️ Looking for a Maintainer ⚠️**
-> This project is seeking a new maintainer. If you are interested in taking over, please open an issue.
-> https://github.com/xbglowx/vault-kv-mv/issues/94
 
 ## Features
 
