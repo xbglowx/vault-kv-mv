@@ -1,20 +1,20 @@
 name: Conventional Commits
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
+    branches: [main]
 
 jobs:
-  conventional-commits:
+  commitlint:
+    name: Validate Conventional Commits
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Check Conventional Commits
+      - name: Validate all commits
         uses: wagoid/commitlint-github-action@v6
         with:
-          configFile: ''
+          configFile: .commitlintrc.json
