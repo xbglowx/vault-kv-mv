@@ -1,3 +1,4 @@
 vault-kv-mv
 *.tar.gz
 .idea
+.vscode
