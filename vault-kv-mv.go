@@ -12,6 +12,10 @@ import (
 	vault "github.com/hashicorp/vault/api"
 )
 
+// Version can be set at build time using ldflags:
+// go build -ldflags "-X main.Version=1.0.0"
+var Version = "dev"
+
 type vaultClient struct {
 	logical *vault.Logical
 }
@@ -119,7 +123,15 @@ Authentication:
 `, os.Args[0], os.Args[0], os.Args[0], os.Args[0])
 	}
 
+	versionFlag := flag.Bool("version", false, "Print version information")
+
 	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("vault-kv-mv version %s\n", Version)
+		os.Exit(0)
+	}
+
 	args := flag.Args()
 	if len(args) != 2 {
 		flag.Usage()
