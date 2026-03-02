@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0](https://github.com/xbglowx/vault-kv-mv/compare/v0.0.14...v0.1.0) (2026-03-02)
+
+
+### Features
+
+* add --version flag and auto-update homebrew tap on release ([e7904bd](https://github.com/xbglowx/vault-kv-mv/commit/e7904bd9098b935cc815b08ad2094ed69d29c44e))
+
 ## [0.0.14](https://github.com/xbglowx/vault-kv-mv/compare/v0.0.13...v0.0.14) (2025-11-10)
 
 
