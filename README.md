@@ -15,6 +15,11 @@ Looking for someone to take this project from me. https://github.com/xbglowx/vau
 
 ## Installation
 
+### Homebrew
+```bash
+brew install xbglowx/tap/vault-kv-mv
+```
+
 ### From source
 
 If you have Go installed, you can build and install `vault-kv-mv` with the following commands:
