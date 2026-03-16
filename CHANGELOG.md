@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/xbglowx/vault-kv-mv/compare/v0.1.0...v0.1.1) (2026-03-16)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/testcontainers/testcontainers-go to v0.41.0 ([#156](https://github.com/xbglowx/vault-kv-mv/issues/156)) ([3250f72](https://github.com/xbglowx/vault-kv-mv/commit/3250f7228ed85332fd05d8222fabf5683f76bfa5))
+
 ## [0.1.0](https://github.com/xbglowx/vault-kv-mv/compare/v0.0.14...v0.1.0) (2026-03-02)
 
 
