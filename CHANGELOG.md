@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/xbglowx/vault-kv-mv/compare/v0.1.1...v0.1.2) (2026-04-22)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/hashicorp/vault/api to v1.23.0 ([#158](https://github.com/xbglowx/vault-kv-mv/issues/158)) ([e01995e](https://github.com/xbglowx/vault-kv-mv/commit/e01995e4baa2146bf4f473c37aeb403af6ab2d10))
+* **deps:** update module github.com/testcontainers/testcontainers-go to v0.42.0 ([#161](https://github.com/xbglowx/vault-kv-mv/issues/161)) ([d82830c](https://github.com/xbglowx/vault-kv-mv/commit/d82830c60d37417f98f112fc84c50976b118574c))
+
 ## [0.1.1](https://github.com/xbglowx/vault-kv-mv/compare/v0.1.0...v0.1.1) (2026-03-16)
 
 
