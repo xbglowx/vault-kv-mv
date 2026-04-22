@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Update Homebrew formula
-      uses: mislav/bump-homebrew-formula-action@v3.6
+      uses: mislav/bump-homebrew-formula-action@v4.1
       with:
         formula-name: vault-kv-mv
         homebrew-tap: xbglowx/homebrew-tap
